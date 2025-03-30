@@ -9,7 +9,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
-public class ThymeleafConfig {
+public class ThymeleafConfiguration {
 
     @Bean
     public ITemplateResolver templateResolver() {
