@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +13,4 @@ public class Post {
     private String text;
     private byte[] image;
     private int likes;
-    private List<Tag> tags;
-    private List<Comment> comments;
 }

@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Like {
     private Long id;
-    private Post post;
+    private Long postId;
 }

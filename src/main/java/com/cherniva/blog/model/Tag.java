@@ -12,5 +12,5 @@ import java.util.List;
 public class Tag {
     private Long id;
     private String tag;
-    private List<Post> posts;
+    private List<Long> postIds;
 }
