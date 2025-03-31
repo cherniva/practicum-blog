@@ -101,4 +101,13 @@ public class JdbcPostRepository implements PostRepository {
             tagIds
         );
     }
+
+    @Override
+    public List<Post> findByTitle(String title) {
+        return jdbcTemplate.query(
+                "SELECT * FROM posts WHERE title = ?",
+                postRowMapper,
+                title
+        );
+    }
 } 

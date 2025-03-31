@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface PostRepository extends BlogRepository<Post, Long> {
     List<Post> findByTags(List<Long> tagIds);
+    List<Post> findByTitle(String title);
 }
