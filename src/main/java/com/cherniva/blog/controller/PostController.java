@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@Controller("/blog")
+@Controller
 public class PostController {
     private final PostService postService;
     private final PostDtoConverter postDtoConverter;
