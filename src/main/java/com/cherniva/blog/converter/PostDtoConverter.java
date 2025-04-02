@@ -33,7 +33,7 @@ public class PostDtoConverter {
         postDto.setTitle(post.getTitle());
         postDto.setTextPreview(preview);
         postDto.setText(postText);
-        postDto.setImage(postDto.getImage());
+        postDto.setImage(post.getImage());
         postDto.setLikesCount(post.getLikes());
         postDto.setComments(comments);
         postDto.setTags(tags);
