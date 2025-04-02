@@ -28,6 +28,15 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    public List<Post> findAllWithPagination(int pageNumber, int pageSize, String sortBy, String sortDirection) {
+        int offset = (pageNumber - 1) * pageSize;
+        return postRepository.findAllWithPagination(offset, pageSize, sortBy, sortDirection);
+    }
+
+    public long countTotalPosts() {
+        return postRepository.countTotalPosts();
+    }
+
     public List<Post> findByTags(List<Tag> tags) {
         List<Long> tagIds = tags.stream()
                 .map(Tag::getId)

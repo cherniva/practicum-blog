@@ -86,6 +86,41 @@ public class JdbcPostRepository implements PostRepository {
     }
 
     @Override
+    public List<Post> findAllWithPagination(int offset, int limit, String sortBy, String sortDirection) {
+        // Validate sortBy to prevent SQL injection
+        String validSortBy = switch (sortBy.toLowerCase()) {
+            case "title", "likes", "id" -> sortBy;
+            default -> "id"; // Default sorting
+        };
+        
+        // Validate sortDirection
+        String validSortDirection = "desc".equalsIgnoreCase(sortDirection) ? "DESC" : "ASC";
+        
+        String sql = String.format(
+            "SELECT * FROM posts ORDER BY %s %s LIMIT ? OFFSET ?",
+            validSortBy,
+            validSortDirection
+        );
+        
+        return jdbcTemplate.query(
+            sql,
+            postRowMapper,
+            limit,
+            offset
+        );
+    }
+
+    @Override
+    public long countTotalPosts() {
+        return Optional.ofNullable(
+                        jdbcTemplate.queryForObject(
+                                "SELECT COUNT(*) FROM posts",
+                                Long.class
+                        ))
+                .orElse(0L);
+    }
+
+    @Override
     @Transactional
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM posts WHERE id = ?", id);
