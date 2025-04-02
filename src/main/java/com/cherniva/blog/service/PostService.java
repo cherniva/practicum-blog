@@ -24,6 +24,10 @@ public class PostService {
         return postRepository.findById(id);
     }
 
+    public List<Post> findAll() {
+        return postRepository.findAll();
+    }
+
     public List<Post> findByTags(List<Tag> tags) {
         List<Long> tagIds = tags.stream()
                 .map(Tag::getId)
