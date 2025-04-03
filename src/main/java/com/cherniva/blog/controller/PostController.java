@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,11 +33,11 @@ public class PostController {
     private final TagService tagService;
     private final PostTagService postTagService;
 
-    public PostController(PostService postService, 
-                         PostDtoConverter postDtoConverter,
-                         ImageRepository imageRepository,
-                         TagService tagService,
-                         PostTagService postTagService) {
+    public PostController(PostService postService,
+                          PostDtoConverter postDtoConverter,
+                          ImageRepository imageRepository,
+                          TagService tagService,
+                          PostTagService postTagService) {
         this.postService = postService;
         this.postDtoConverter = postDtoConverter;
         this.imageRepository = imageRepository;
@@ -58,16 +59,11 @@ public class PostController {
         return "posts";
     }
 
-    @GetMapping("/posts/add")
-    public String addPostGet() {
-        return "add-post";
-    }
-
     @PostMapping("/posts")
     public String addPost(@RequestParam("title") String title,
-                         @RequestParam("text") String text,
-                         @RequestParam(value = "image", required = false) MultipartFile imageFile,
-                         @RequestParam(value = "tags", required = false) String tagsText) throws IOException {
+                          @RequestParam("text") String text,
+                          @RequestParam(value = "image", required = false) MultipartFile imageFile,
+                          @RequestParam(value = "tags", required = false) String tagsText) throws IOException {
         // Create and save image if provided
         Long imageId = null;
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -106,6 +102,11 @@ public class PostController {
         return "redirect:/posts";
     }
 
+    @GetMapping("/posts/add")
+    public String addPostGet() {
+        return "add-post";
+    }
+
     @GetMapping("/posts/{id}")
     public String getPost(@PathVariable("id") Long postId, Model model) {
         Optional<Post> postOpt = postService.findById(postId);
@@ -116,6 +117,68 @@ public class PostController {
         PostDto postDto = postDtoConverter.postToPostDto(post);
         model.addAttribute("post", postDto);
         return "post";
+    }
+
+    @PostMapping("/posts/{id}")
+    public String editPost(@PathVariable("id") Long postId,
+                          @RequestParam("title") String title,
+                          @RequestParam("text") String text,
+                          @RequestParam(value = "image", required = false) MultipartFile imageFile,
+                          @RequestParam(value = "tags", required = false) String tagsText) throws IOException {
+        // Find the existing post
+        Optional<Post> postOpt = postService.findById(postId);
+        if (postOpt.isEmpty()) {
+            return "redirect:/posts";
+        }
+        
+        Post post = postOpt.get();
+        
+        // Update basic post fields
+        post.setTitle(title);
+        post.setText(text);
+        
+        // Handle image update if provided
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // Create and save new image
+            Image image = new Image();
+            image.setImage(imageFile.getBytes());
+            image = imageRepository.save(image);
+            
+            // Update post with new image ID
+            post.setImageId(image.getId());
+        }
+        
+        // Save the updated post
+        post = postService.save(post);
+        
+        // Handle tags update if provided
+        if (tagsText != null && !tagsText.trim().isEmpty()) {
+            // Get existing tags for this post
+            List<Long> existingTagIds = postTagService.findTagIdsByPostId(postId);
+            
+            // Remove all existing tags
+            for (Long tagId : existingTagIds) {
+                postTagService.removeTagFromPost(postId, tagId);
+            }
+            
+            // Add new tags
+            List<String> tagNames = Arrays.stream(tagsText.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+            
+            for (String tagName : tagNames) {
+                // Create or find existing tag
+                Tag tag = new Tag();
+                tag.setTag(tagName);
+                tag = tagService.save(tag);
+                
+                // Associate tag with post
+                postTagService.addTagToPost(post.getId(), tag.getId());
+            }
+        }
+        
+        return "redirect:/posts/" + postId;
     }
 
     @GetMapping("/posts/{id}/edit")
