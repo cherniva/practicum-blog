@@ -5,11 +5,15 @@ import com.cherniva.blog.repo.PostRepository;
 import com.cherniva.blog.repo.TagRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,14 +50,21 @@ public class JdbcPostRepository implements PostRepository {
     }
 
     private Post insert(Post post) {
-        jdbcTemplate.update(
-            "INSERT INTO posts (title, text, image_id, likes) VALUES (?, ?, ?, ?)",
-            post.getTitle(),
-            post.getText(),
-            post.getImageId(),
-            post.getLikes()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO posts (title, text, image_id, likes) VALUES (?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, post.getTitle());
+            ps.setString(2, post.getText());
+            ps.setObject(3, post.getImageId());
+            ps.setInt(4, post.getLikes());
+            return ps;
+        }, keyHolder);
+        
+        post.setId(keyHolder.getKey().longValue());
         return post;
     }
 

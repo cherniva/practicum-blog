@@ -4,10 +4,14 @@ import com.cherniva.blog.model.Tag;
 import com.cherniva.blog.repo.TagRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,10 +42,18 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     private Tag insert(Tag tag) {
-        jdbcTemplate.update(
-            "INSERT INTO tags (tag) VALUES (?)",
-            tag.getTag()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO tags (tag) VALUES (?)",
+                Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, tag.getTag());
+            return ps;
+        }, keyHolder);
+        
+        tag.setId(keyHolder.getKey().longValue());
         return tag;
     }
 

@@ -5,10 +5,14 @@ import com.cherniva.blog.model.Post;
 import com.cherniva.blog.repo.LikeRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,10 +44,18 @@ public class JdbcLikeRepository implements LikeRepository {
     }
 
     private Like insert(Like like) {
-        jdbcTemplate.update(
-            "INSERT INTO likes (post_id) VALUES (?)",
-            like.getPostId()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO likes (post_id) VALUES (?)",
+                Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setLong(1, like.getPostId());
+            return ps;
+        }, keyHolder);
+        
+        like.setId(keyHolder.getKey().longValue());
         return like;
     }
 
