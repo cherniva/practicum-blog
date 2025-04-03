@@ -29,7 +29,7 @@ public class JdbcPostRepository implements PostRepository {
         post.setId(rs.getLong("id"));
         post.setTitle(rs.getString("title"));
         post.setText(rs.getString("text"));
-        post.setImage(rs.getBytes("image"));
+        post.setImageId(rs.getLong("image_id"));
         post.setLikes(rs.getInt("likes"));
         
         return post;
@@ -47,10 +47,10 @@ public class JdbcPostRepository implements PostRepository {
 
     private Post insert(Post post) {
         jdbcTemplate.update(
-            "INSERT INTO posts (title, text, image, likes) VALUES (?, ?, ?, ?)",
+            "INSERT INTO posts (title, text, image_id, likes) VALUES (?, ?, ?, ?)",
             post.getTitle(),
             post.getText(),
-            post.getImage(),
+            post.getImageId(),
             post.getLikes()
         );
         
@@ -59,10 +59,10 @@ public class JdbcPostRepository implements PostRepository {
 
     private Post update(Post post) {
         jdbcTemplate.update(
-            "UPDATE posts SET title = ?, text = ?, image = ?, likes = ? WHERE id = ?",
+            "UPDATE posts SET title = ?, text = ?, image_id = ?, likes = ? WHERE id = ?",
             post.getTitle(),
             post.getText(),
-            post.getImage(),
+            post.getImageId(),
             post.getLikes(),
             post.getId()
         );

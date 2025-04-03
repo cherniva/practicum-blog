@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
+public class Image {
     private Long id;
-    private String title;
-    private String text;
-    private Long imageId;
-    private int likes;
+    private byte[] image;
 }

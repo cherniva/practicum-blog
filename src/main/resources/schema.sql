@@ -1,10 +1,17 @@
+-- Create images table
+CREATE TABLE IF NOT EXISTS images (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    image LONGBLOB NOT NULL
+);
+
 -- Create posts table
 CREATE TABLE IF NOT EXISTS posts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     text TEXT NOT NULL,
-    image LONGBLOB,
-    likes INT DEFAULT 0
+    image_id BIGINT,
+    likes INT DEFAULT 0,
+    FOREIGN KEY (image_id) REFERENCES images(id) ON DELETE SET NULL
 );
 
 -- Create tags table
