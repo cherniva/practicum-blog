@@ -8,6 +8,8 @@ import com.cherniva.blog.service.CommentService;
 import com.cherniva.blog.service.TagService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -25,29 +27,28 @@ public class PostDtoConverter {
         List<Comment> comments = commentService.findByPostId(postId);
         List<Tag> tags = tagService.findByPostId(postId);
 
-        String postText = post.getText();
-        String preview = getFirstParagraph(postText);
+        List<String> paragraphs = getParagraphs(post.getText());
+        String preview = paragraphs.isEmpty() ? "" : paragraphs.get(0);
 
         PostDto postDto = new PostDto();
         postDto.setPostId(postId);
-        postDto.setTitle(post.getTitle());
+        postDto.setTitle(post.getTitle() != null ? post.getTitle() : "");
         postDto.setTextPreview(preview);
-        postDto.setText(postText);
+        postDto.setTextParts(paragraphs);
         postDto.setLikesCount(post.getLikes());
-        postDto.setComments(comments);
-        postDto.setTags(tags);
+        postDto.setComments(comments != null ? comments : new ArrayList<>());
+        postDto.setTags(tags != null ? tags : new ArrayList<>());
 
         return postDto;
     }
 
-    private String getFirstParagraph(String text) {
+    private List<String> getParagraphs(String text) {
         if (text == null || text.trim().isEmpty()) {
-            return "";
+            return new ArrayList<>();
         }
 
         // Split by multiple possible paragraph separators
-        String[] paragraphs = text.split("(?m)(?:\r\n|\n|\r){2,}");
-        return paragraphs[0].trim();
+        return Arrays.asList(text.split("(?m)(?:\r\n|\n|\r){2,}"));
     }
 
 }

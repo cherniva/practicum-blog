@@ -12,13 +12,16 @@ import com.cherniva.blog.service.TagService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -45,20 +48,17 @@ public class PostController {
     public String allPosts(Model model,
                            @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
                            @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
-                        //    @RequestParam(name = "sortBy", defaultValue = "id") String sortBy, // TODO: implement sorting
-                        //    @RequestParam(name = "sortDirection", defaultValue = "desc") String sortDirection
         List<PostDto> postDtos = postService.findAllWithPagination(pageNumber, pageSize, "id", "ASC").stream()
                 .map(postDtoConverter::postToPostDto)
                 .toList();
         long totalPosts = postService.countTotalPosts();
         model.addAttribute("posts", postDtos);
         model.addAttribute("paging", new Paging(pageNumber, pageSize, totalPosts));
-        // model.addAttribute("sortBy", sortBy);
-        // model.addAttribute("sortDirection", sortDirection);
+
         return "posts";
     }
 
-    @GetMapping("/post/add")
+    @GetMapping("/posts/add")
     public String addPostGet() {
         return "add-post";
     }
@@ -104,6 +104,30 @@ public class PostController {
         }
 
         return "redirect:/posts";
+    }
+
+    @GetMapping("/posts/{id}")
+    public String getPost(@PathVariable("id") Long postId, Model model) {
+        Optional<Post> postOpt = postService.findById(postId);
+        if (postOpt.isEmpty())
+            return "posts";
+
+        Post post = postOpt.get();
+        PostDto postDto = postDtoConverter.postToPostDto(post);
+        model.addAttribute("post", postDto);
+        return "post";
+    }
+
+    @GetMapping("/posts/{id}/edit")
+    public String editPost(@PathVariable("id") Long postId, Model model) {
+        Optional<Post> postOpt = postService.findById(postId);
+        if (postOpt.isEmpty())
+            return "redirect:/posts";
+
+        Post post = postOpt.get();
+        PostDto postDto = postDtoConverter.postToPostDto(post);
+        model.addAttribute("post", postDto);
+        return "add-post";
     }
 
     private record Paging(int pageNumber, int pageSize, long totalItems) {

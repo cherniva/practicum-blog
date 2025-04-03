@@ -15,7 +15,7 @@ public class PostDto {
     private Long postId;
     private String title;
     private String textPreview;
-    private String text;
+    private List<String> textParts;
     private int likesCount;
     private List<Comment> comments;
     private List<Tag> tags;

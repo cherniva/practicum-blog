@@ -9,7 +9,7 @@
 <a href="/blog/posts" style="float:right;">
     <b>НА ГЛАВНУЮ &cudarrr;</b>
 </a>
-<form method="POST" th:action="${post==null ? '/blog/posts' : '/blog/posts/'+post.getId()}" enctype="multipart/form-data">
+<form method="POST" th:action="${post==null ? '/blog/posts' : '/blog/posts/'+post.getPostId()}" enctype="multipart/form-data">
     <table style="width:50%;margin-left:auto;margin-right:auto;">
         <tr>
             <td>
@@ -26,13 +26,13 @@
         <tr>
             <td>
                 <h3>Теги</h3>
-                <textarea rows="2" style="width: 100%;" name="tags" th:text="${post==null ? '' : post.getTagsAsText()}"></textarea>
+                <textarea rows="2" style="width: 100%;" name="tags" th:text="${post==null ? '' : #strings.listJoin(post.getTags().![getTag()], ', ')}"></textarea>
             </td>
         </tr>
         <tr>
             <td>
                 <h3>Текст</h3>
-                <textarea rows="30" style="width: 100%;" name="text" th:text="${post==null ? '' : post.getText()}"></textarea>
+                <textarea rows="30" style="width: 100%;" name="text" th:text="${post==null ? '' : #strings.listJoin(post.getTextParts(), '\n\n')}"></textarea>
             </td>
         </tr>
         <tr>
