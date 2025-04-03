@@ -48,10 +48,11 @@ public class ImageController {
 
             return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
         } else {
+            Image image = imageOpt.get();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
-            headers.setContentLength(0);
-            return new ResponseEntity<>(new byte[]{}, headers, HttpStatus.OK);
+            headers.setContentLength(image.getImage().length);
+            return new ResponseEntity<>(image.getImage(), headers, HttpStatus.OK);
         }
     }
 }
