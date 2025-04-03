@@ -37,8 +37,8 @@ public class PostController {
         return "posts";
     }
 
-    @GetMapping("/posts/add")
-    public String addPost() {
+    @GetMapping("/post/add")
+    public String addPostGet() {
         return "add-post";
     }
 
