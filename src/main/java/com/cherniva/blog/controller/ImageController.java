@@ -10,7 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.util.InvalidUrlException;
+
+import java.lang.IllegalArgumentException;
 
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ public class ImageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") Long postId) throws IOException {
-        Image image = imageRepository.findByPostId(postId).orElseThrow(() -> new InvalidUrlException("Post does not exist"));
+        Image image = imageRepository.findByPostId(postId).orElseThrow(() -> new IllegalArgumentException("Post does not exist"));
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
         headers.setContentLength(image.getImage().length);

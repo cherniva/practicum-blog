@@ -8,7 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.util.InvalidUrlException;
+
+import java.lang.IllegalArgumentException;
 
 @Controller
 public class LikeController {
@@ -22,7 +23,7 @@ public class LikeController {
 
     @PostMapping("/posts/{id}/like")
     public String likePost(@PathVariable("id") Long postId, @RequestParam(name = "like") boolean likeFlag) {
-        Post post = postService.findById(postId).orElseThrow(() -> new InvalidUrlException("Post does not exist"));
+        Post post = postService.findById(postId).orElseThrow(() -> new IllegalArgumentException("Post does not exist"));
 
         if (likeFlag) {
             Like like = new Like();
