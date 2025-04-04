@@ -150,7 +150,12 @@ public class PostController {
         
         // Save the updated post
         post = postService.save(post);
-        
+
+        List<Tag> postTags = postTagService.findTagIdsByPostId(postId).stream()
+                .map(tagService::findById)
+                .map(Optional::get)
+                .toList();
+
         // Handle tags update if provided
         if (tagsText != null && !tagsText.trim().isEmpty()) {
             // Add new tags
@@ -158,6 +163,12 @@ public class PostController {
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toList());
+
+            for (Tag postTag : postTags) {
+                if (!tagNames.contains(postTag.getTag())) {
+                    postTagService.removeTagFromPost(postId, postTag.getId());
+                }
+            }
 
             for (String tagName : tagNames) {
                 // Try to find existing tag first
@@ -175,14 +186,6 @@ public class PostController {
 
                 // Associate tag with post
                 postTagService.addTagToPost(post.getId(), tag.getId());
-            }
-        } else {
-            // Get existing tags for this post
-            List<Long> existingTagIds = postTagService.findTagIdsByPostId(postId);
-
-            // Remove all existing tags
-            for (Long tagId : existingTagIds) {
-                postTagService.removeTagFromPost(postId, tagId);
             }
         }
         
