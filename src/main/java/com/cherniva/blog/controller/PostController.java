@@ -193,6 +193,14 @@ public class PostController {
         return "add-post";
     }
 
+    @PostMapping("/posts/{id}/delete")
+    public String deletePost(@PathVariable("id") Long postId) {
+        postService.deleteById(postId); // todo chernikov: mb delete likes, comments and etc
+                                        // todo chernikov: mb just set flag 'deleted' instead of deletion from db
+
+        return "redirect:/posts";
+    }
+
     private record Paging(int pageNumber, int pageSize, long totalItems) {
         public boolean hasPrevious() {
             return pageNumber > 1;
