@@ -43,4 +43,8 @@ public class PostService {
                 .toList();
         return postRepository.findByTags(tagIds);
     }
+
+    public void deleteById(Long id) {
+        postRepository.deleteById(id);
+    }
 }
