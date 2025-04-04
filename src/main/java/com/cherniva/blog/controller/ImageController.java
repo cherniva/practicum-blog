@@ -25,7 +25,7 @@ public class ImageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") Long postId) throws IOException {
-        Optional<Image> imageOpt = imageRepository.findById(postId);
+        Optional<Image> imageOpt = imageRepository.findByPostId(postId);
         if (imageOpt.isEmpty()) {
             return null;
         }
