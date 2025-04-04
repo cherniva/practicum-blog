@@ -20,6 +20,13 @@
             newButton.innerHTML = "&#10003;";
             newButton.style="float:right;"
             newComment.parentNode.appendChild(newButton);
+
+            // Add event listener for Ctrl+Enter
+            newComment.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    this.closest('form').submit();
+                }
+            });
         }
 
         function addComment(id) {
@@ -32,13 +39,32 @@
             newComment.rows = 3;
             newComment.name = "text";
             newComment.style = "width:100%;";
+            newComment.id = "commentTextarea";
             form.appendChild(newComment);
 
             var newButton = document.createElement("button");
             newButton.innerHTML = "&#10003;";
             newButton.style="float:right;"
             form.appendChild(newButton);
+
+            // Add event listener for Ctrl+Enter
+            newComment.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    form.submit();
+                }
+            });
         }
+
+        // Add event listener for Ctrl+Enter on existing comment textareas
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('textarea').forEach(function(textarea) {
+                textarea.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        this.closest('form').submit();
+                    }
+                });
+            });
+        });
     </script>
 </head>
 
