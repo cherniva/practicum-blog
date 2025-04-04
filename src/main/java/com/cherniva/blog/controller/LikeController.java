@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.lang.IllegalArgumentException;
+import java.util.Optional;
 
 @Controller
 public class LikeController {
@@ -23,7 +23,12 @@ public class LikeController {
 
     @PostMapping("/posts/{id}/like")
     public String likePost(@PathVariable("id") Long postId, @RequestParam(name = "like") boolean likeFlag) {
-        Post post = postService.findById(postId).orElseThrow(() -> new IllegalArgumentException("Post does not exist"));
+        Optional<Post> postOpt = postService.findById(postId);
+        if (postOpt.isEmpty()) {
+            return "redirect:/posts";
+        }
+
+        Post post = postOpt.get();
 
         if (likeFlag) {
             Like like = new Like();

@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.lang.IllegalArgumentException;
-
 import java.io.IOException;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/images")
@@ -26,7 +25,12 @@ public class ImageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") Long postId) throws IOException {
-        Image image = imageRepository.findByPostId(postId).orElseThrow(() -> new IllegalArgumentException("Post does not exist"));
+        Optional<Image> imageOpt = imageRepository.findById(postId);
+        if (imageOpt.isEmpty()) {
+            return null;
+        }
+
+        Image image = imageOpt.get();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
         headers.setContentLength(image.getImage().length);

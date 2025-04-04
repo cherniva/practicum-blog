@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.lang.IllegalArgumentException;
+import java.util.Optional;
 
 @Controller
 public class CommentController {
@@ -23,7 +23,10 @@ public class CommentController {
 
     @PostMapping("/posts/{id}/comments")
     public String addComment(@PathVariable("id") Long postId, @RequestParam("text") String commentText) {
-        Post post = postService.findById(postId).orElseThrow(() -> new IllegalArgumentException("Post does not exist"));
+        Optional<Post> postOpt = postService.findById(postId);
+        if (postOpt.isEmpty()) {
+            return "redirect:/posts";
+        }
 
         Comment comment = new Comment();
         comment.setComment(commentText);
@@ -36,7 +39,12 @@ public class CommentController {
     @PostMapping("/posts/{postId}/comments/{commentId}")
     public String editComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId,
                               @RequestParam("text") String commentText) {
-        Comment comment = commentService.findById(commentId).orElseThrow(() -> new IllegalArgumentException("Comment does not exist"));
+        Optional<Comment> commentOpt = commentService.findById(commentId);
+        if (commentOpt.isEmpty()) {
+            return "redirect:/posts/" + postId;
+        }
+
+        Comment comment = commentOpt.get();
         comment.setComment(commentText);
         commentService.save(comment);
 
