@@ -17,7 +17,7 @@ public class JdbcPostTagRepository implements PostTagRepository {
     @Override
     public void addTagToPost(Long postId, Long tagId) {
         jdbcTemplate.update(
-            "INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)",
+            "INSERT IGNORE INTO post_tags (post_id, tag_id) VALUES (?, ?)",
             postId,
             tagId
         );

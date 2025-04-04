@@ -96,4 +96,14 @@ public class JdbcTagRepository implements TagRepository {
             postId
         );
     }
+
+    @Override
+    public Optional<Tag> findByTag(String tag) {
+        List<Tag> results = jdbcTemplate.query(
+            "SELECT * FROM tags WHERE tag = ?",
+            tagRowMapper,
+            tag
+        );
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+    }
 } 

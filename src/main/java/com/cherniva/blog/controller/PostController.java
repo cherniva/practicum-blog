@@ -153,28 +153,36 @@ public class PostController {
         
         // Handle tags update if provided
         if (tagsText != null && !tagsText.trim().isEmpty()) {
-            // Get existing tags for this post
-            List<Long> existingTagIds = postTagService.findTagIdsByPostId(postId);
-            
-            // Remove all existing tags
-            for (Long tagId : existingTagIds) {
-                postTagService.removeTagFromPost(postId, tagId);
-            }
-            
             // Add new tags
-            List<String> tagNames = Arrays.stream(tagsText.split(","))
+            List<String> tagNames = Arrays.stream(tagsText.split("[,\\s]+"))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toList());
-            
+
             for (String tagName : tagNames) {
-                // Create or find existing tag
-                Tag tag = new Tag();
-                tag.setTag(tagName);
-                tag = tagService.save(tag);
-                
+                // Try to find existing tag first
+                Optional<Tag> existingTag = tagService.findByTag(tagName);
+                Tag tag;
+
+                if (existingTag.isPresent()) {
+                    tag = existingTag.get();
+                } else {
+                    // Create new tag only if it doesn't exist
+                    tag = new Tag();
+                    tag.setTag(tagName);
+                    tag = tagService.save(tag);
+                }
+
                 // Associate tag with post
                 postTagService.addTagToPost(post.getId(), tag.getId());
+            }
+        } else {
+            // Get existing tags for this post
+            List<Long> existingTagIds = postTagService.findTagIdsByPostId(postId);
+
+            // Remove all existing tags
+            for (Long tagId : existingTagIds) {
+                postTagService.removeTagFromPost(postId, tagId);
             }
         }
         
