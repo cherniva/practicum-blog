@@ -3,6 +3,17 @@
 
 <head>
     <title>Ivan Chernikov Blog</title>
+    <style>
+        .text-preview {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.5em;
+            max-height: 4.5em;
+        }
+    </style>
 </head>
 
 <body>
@@ -44,7 +55,7 @@
                         <img height="300" th:src="${'/blog/images/'+post.getPostId()}">
                     </a>
                 </p>
-                <p th:text="${post.getTextPreview()}"></p>
+                <p class="text-preview" th:text="${post.getTextPreview()}"></p>
                 <p>
                     <span th:text="${'&#x1F44D; '+post.getLikesCount()}"></span>
                     <span th:text="${'&#x2709; '+post.getComments().size()}"></span>
