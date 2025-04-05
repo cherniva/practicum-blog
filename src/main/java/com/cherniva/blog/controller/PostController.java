@@ -117,7 +117,7 @@ public class PostController {
     public String getPost(@PathVariable("id") Long postId, Model model) {
         Optional<Post> postOpt = postService.findById(postId);
         if (postOpt.isEmpty())
-            return "posts";
+            return "redirect:/posts";
 
         Post post = postOpt.get();
         PostDto postDto = postDtoConverter.postToPostDto(post);
