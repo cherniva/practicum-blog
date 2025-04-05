@@ -168,7 +168,7 @@ public class PostController {
             List<String> tagNames = Arrays.stream(tagsText.split("[,\\s]+"))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
-                    .collect(Collectors.toList());
+                    .toList();
 
             for (Tag postTag : postTags) {
                 if (!tagNames.contains(postTag.getTag())) {
@@ -181,18 +181,20 @@ public class PostController {
                 Optional<Tag> existingTag = tagService.findByTag(tagName);
                 Tag tag;
 
-                if (existingTag.isPresent()) {
-                    tag = existingTag.get();
-                } else {
+                if (existingTag.isEmpty()) {
                     // Create new tag only if it doesn't exist
                     tag = new Tag();
                     tag.setTag(tagName);
                     tag = tagService.save(tag);
+                } else {
+                    tag = existingTag.get();
                 }
 
                 // Associate tag with post
                 postTagService.addTagToPost(post.getId(), tag.getId());
             }
+        } else {
+            postTags.forEach(postTag -> postTagService.removeTagFromPost(postId, postTag.getId()));
         }
         
         return "redirect:/posts/" + postId;
