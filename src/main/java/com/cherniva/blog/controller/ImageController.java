@@ -27,7 +27,7 @@ public class ImageController {
     public ResponseEntity<byte[]> getImage(@PathVariable("id") Long postId) throws IOException {
         Optional<Image> imageOpt = imageRepository.findByPostId(postId);
         if (imageOpt.isEmpty()) {
-            return null;
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
 
         Image image = imageOpt.get();
