@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +52,7 @@ public class PostController {
         List<PostDto> postDtos = postService.findAllWithPagination(pageNumber, pageSize, "id", "ASC").stream()
                 .map(postDtoConverter::postToPostDto)
                 .toList();
-        if (StringUtils.hasText(searchTag)) {
+        if (StringUtils.hasText(searchTag)) { // todo: can be done by sql call, not an in memory sorting
             postDtos = postDtos.stream()
                     .filter(pDto -> pDto.getTags().stream().anyMatch(t -> t.getTag().equals(searchTag)))
                     .toList();
@@ -91,7 +89,7 @@ public class PostController {
 
         // Handle tags if provided
         if (tagsText != null && !tagsText.trim().isEmpty()) {
-            List<String> tagNames = Arrays.stream(tagsText.split(","))
+            List<String> tagNames = Arrays.stream(tagsText.split("[,\\s]+"))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toList());
@@ -214,8 +212,7 @@ public class PostController {
 
     @PostMapping("/posts/{id}/delete")
     public String deletePost(@PathVariable("id") Long postId) {
-        postService.deleteById(postId); // todo chernikov: mb delete likes, comments and etc
-                                        // todo chernikov: mb just set flag 'deleted' instead of deletion from db
+        postService.deleteById(postId); // todo: instead of deletion set boolean flag 'deleted'
 
         return "redirect:/posts";
     }
