@@ -37,13 +37,4 @@ public class DataSourceConfiguration {
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
-
-//    @EventListener
-//    public void populate(ContextRefreshedEvent event) {
-//        DataSource dataSource = event.getApplicationContext().getBean(DataSource.class);
-//
-//        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-//        populator.addScript(new ClassPathResource("schema.sql"));
-//        populator.execute(dataSource);
-//    }
 }
