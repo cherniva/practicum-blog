@@ -11,6 +11,7 @@ import com.cherniva.blog.service.PostTagService;
 import com.cherniva.blog.service.TagService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,13 +49,20 @@ public class PostController {
     @GetMapping({"", "/", "/home", "/posts"})
     public String allPosts(Model model,
                            @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
-                           @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
+                           @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+                           @RequestParam(name = "search", required = false) String searchTag) {
         List<PostDto> postDtos = postService.findAllWithPagination(pageNumber, pageSize, "id", "ASC").stream()
                 .map(postDtoConverter::postToPostDto)
                 .toList();
+        if (StringUtils.hasText(searchTag)) {
+            postDtos = postDtos.stream()
+                    .filter(pDto -> pDto.getTags().stream().anyMatch(t -> t.getTag().equals(searchTag)))
+                    .toList();
+        }
         long totalPosts = postService.countTotalPosts();
         model.addAttribute("posts", postDtos);
         model.addAttribute("paging", new Paging(pageNumber, pageSize, totalPosts));
+        model.addAttribute("search", searchTag);
 
         return "posts";
     }
