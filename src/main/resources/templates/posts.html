@@ -13,6 +13,14 @@
             line-height: 1.5em;
             max-height: 4.5em;
         }
+        .title-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        .title-link:hover {
+            text-decoration: none;
+            color: inherit;
+        }
     </style>
 </head>
 
@@ -49,7 +57,9 @@
         </tr>
         <tr th:each="post : ${posts}">
             <td style="border-bottom:thin solid;">
-                <h2 th:text="${post.getTitle()}"></h2>
+                <a class="title-link" th:href="${'/blog/posts/'+post.getPostId()}">
+                    <h2 th:text="${post.getTitle()}"></h2>
+                </a>
                 <p>
                     <a th:href="${'/blog/posts/'+post.getPostId()}">
                         <img height="300" th:src="${'/blog/images/'+post.getPostId()}">
