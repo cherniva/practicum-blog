@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Витрина товаров</title>
+    <title>Ivan Chernikov Blog</title>
 </head>
 
 <body>
@@ -32,7 +32,7 @@
         <tr>
             <td>
                 <h3>Текст</h3>
-                <textarea rows="30" style="width: 100%;" name="text" th:text="${post==null ? '' : #strings.listJoin(post.getTextParts(), '\n\n')}"></textarea>
+                <textarea rows="30" style="width: 100%;" name="text" th:utext="${post==null ? '' : #strings.replace(#strings.listJoin(post.getTextParts(), '\n\n'), '\n', '&#10;')}"></textarea>
             </td>
         </tr>
         <tr>
