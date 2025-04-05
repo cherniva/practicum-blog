@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -54,16 +55,21 @@ class LikeControllerTest {
         when(postService.save(any(Post.class))).thenReturn(testPost);
         when(likeService.save(any(Like.class))).thenReturn(new Like());
 
+        int likesBefore = testPost.getLikes();
+
         // Act & Assert
         mockMvc.perform(post("/posts/1/like")
                 .param("like", "true"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/posts/1"));
 
+        int likesAfter = testPost.getLikes();
+
         // Verify
         verify(postService, times(1)).findById(1L);
         verify(likeService, times(1)).save(any(Like.class));
         verify(postService, times(1)).save(any(Post.class));
+        assertEquals(1, likesAfter-likesBefore);
     }
 
     @Test
@@ -72,16 +78,21 @@ class LikeControllerTest {
         when(postService.findById(1L)).thenReturn(Optional.of(testPost));
         when(postService.save(any(Post.class))).thenReturn(testPost);
 
+        int likesBefore = testPost.getLikes();
+
         // Act & Assert
         mockMvc.perform(post("/posts/1/like")
                 .param("like", "false"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/posts/1"));
 
+        int likesAfter = testPost.getLikes();
+
         // Verify
         verify(postService, times(1)).findById(1L);
         verify(likeService, never()).save(any(Like.class));
         verify(postService, times(1)).save(any(Post.class));
+        assertEquals(1, likesBefore-likesAfter);
     }
 
     @Test
