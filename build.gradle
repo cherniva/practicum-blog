@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.cherniva'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = '21'
+targetCompatibility = '21'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Database
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    testImplementation 'com.h2database:h2:2.2.224'
+
+    // Commons FileUpload - included in Spring Boot's web starter but adding explicitly for clarity
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    // Testing dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Includes JUnit, Mockito, Spring Test, etc.
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// This configures the fat JAR
+bootJar {
+    archiveBaseName = 'blog'
+    archiveVersion = '1.0-SNAPSHOT'
+}
+
+// Disable the regular JAR task since we're using the bootJar
+jar {
+    enabled = false
+}
