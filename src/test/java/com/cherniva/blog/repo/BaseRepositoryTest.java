@@ -14,9 +14,6 @@ import java.util.List;
 public abstract class BaseRepositoryTest {
 
     @Autowired
-    protected DataSource dataSource;
-
-    @Autowired
     protected JdbcTemplate jdbcTemplate;
 
     @AfterEach
