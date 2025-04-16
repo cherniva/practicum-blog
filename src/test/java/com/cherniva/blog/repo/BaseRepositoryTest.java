@@ -2,14 +2,15 @@ package com.cherniva.blog.repo;
 
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 import java.util.List;
 
-@SpringJUnitConfig(com.cherniva.blog.config.TestConfig.class)
+@SpringBootTest
+@ActiveProfiles("test")
 public abstract class BaseRepositoryTest {
 
     @Autowired
